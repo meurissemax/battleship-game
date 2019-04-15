@@ -7,6 +7,7 @@ import java.util.Random;
  * @version 3/27/2019
  */
 public class Grid {
+	private int size;
 	private Entity[] grid;
 
 	/**
@@ -15,6 +16,7 @@ public class Grid {
 	 * @param size The size of the grid (length of one side of the square)
 	 */
 	public Grid(int size) {
+		this.size = size;
 		grid = new Entity[size * size];
 
 		for(int i = 0; i < grid.length; i++)
@@ -28,7 +30,7 @@ public class Grid {
 	 * N.B.: This function only display the positions of each ship, not their status.
 	 */
 	public void display() {
-		int id, count = 0, line = 0, limit = 10;
+		int id, count = 0, line = 0, limit = size;
 
 		System.out.println("    0 1 2 3 4 5 6 7 8 9");
 		System.out.println("    -------------------");
@@ -37,7 +39,7 @@ public class Grid {
 			count++;
 			id = grid[i].getID();
 
-			if(i % 10 == 0)
+			if(i % size == 0)
 				System.out.print(line++ + " | ");
 
 			System.out.print(((id == 0) ? "-" : id) + " ");
@@ -214,13 +216,13 @@ public class Grid {
 			if(dir)
 				pos = new Random().nextInt(grid.length - size);
 			else
-				pos = new Random().nextInt(grid.length - (size * 10));
+				pos = new Random().nextInt(grid.length - (size * this.size));
 
 			while(grid[pos].getID() != 0)
 				if(dir)
 					pos = new Random().nextInt(grid.length - size);
 				else
-					pos = new Random().nextInt(grid.length - (size * 10));
+					pos = new Random().nextInt(grid.length - (size * this.size));
 
 			valid = true;
 			i = pos;
@@ -229,11 +231,11 @@ public class Grid {
 			if(dir)
 				limit = size;
 			else
-				limit = size * 10;
+				limit = size * this.size;
 
 			while(i < pos + limit) {
 				if(dir)
-					if((i - (i % 10)) - ((i - 1) - ((i - 1) % 10)) == 10)
+					if((i - (i % this.size)) - ((i - 1) - ((i - 1) % this.size)) == this.size)
 						valid = false;
 
 				if(i > grid.length)
@@ -247,7 +249,7 @@ public class Grid {
 				if(dir)
 					i++;
 				else
-					i += 10;
+					i += this.size;
 			}
 		}
 

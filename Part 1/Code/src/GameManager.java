@@ -17,7 +17,7 @@ public class GameManager {
 	 * The constructor initializes the grid and add the ship on the grid.
 	 */
 	public GameManager() {
-		grid = new Grid(10);
+		grid = new Grid(GRID_SIZE);
 
 		for(int i = 0; i < SHIP_SIZES.length; i++)
 			grid.addShip(i + 1, SHIP_SIZES[i]);

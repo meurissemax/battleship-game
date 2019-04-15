@@ -11,9 +11,9 @@ import java.net.ServerSocket;
  * @version 3/27/2019
  */
 public class BattleshipServer {
-	public static final int PORT = 2278;
+	private static final int PORT = 2278;
 
-	public static int gameID = 0;
+	private static int gameID = 0;
 
 	public static void main(String[] args) {
 		System.out.println("Server starts.");

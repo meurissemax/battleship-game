@@ -2,6 +2,7 @@ import java.io.OutputStream;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 
+import java.net.InetAddress;
 import java.net.Socket;
 
 import java.util.Scanner;
@@ -17,10 +18,11 @@ public class BattleshipClient {
     private static final int TOTAL_SHIP_SIZE = 17; /// to know when the client hit all the ships
     private static final int MAX_TRY = 70;
     private static final int PORT = 2278;
-    private static final String HOST = "localhost";
     private static final String SHIP_NAMES[] = {"Carrier", "Battleship", "Cruiser", "Submarine", "Destroyer"};
 
     public static void main(String[] args) {
+        String host = "localhost";
+
         Socket cSocket;
         OutputStream out;
         BufferedInputStream in;
@@ -40,9 +42,13 @@ public class BattleshipClient {
         for(int i = 0; i < grid.length; i++)
             grid[i] = false;
 
+        if(args.length > 0)
+            if(!args[0].isEmpty())
+                host = args[0];
+
         try {
             /// Initialization
-            cSocket = new Socket(HOST, PORT);
+            cSocket = new Socket(InetAddress.getByName(host), PORT);
 			out = cSocket.getOutputStream();
 			in = new BufferedInputStream(cSocket.getInputStream());
 

@@ -1,3 +1,9 @@
 .DS_Store
-Partie 1/Rapport/
-Partie 1/Code/bin/
+
+Part 1/Code/bin
+Part 1/Report/*
+!Part 1/Report/main.pdf
+
+Part 2/Code/bin
+Part 2/Report/*
+!Part 2/Report/main.pdf
