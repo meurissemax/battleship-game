@@ -11,7 +11,7 @@ import java.util.ArrayList;
  * This class is used to deal with HTTP requests (parse the request and save some information).
  *
  * @author Maxime Meurisse & Valentin Vermeylen
- * @version 2019.04.20
+ * @version 2019.04.22
  */
 
 public class HTTPHandler {
@@ -79,12 +79,14 @@ public class HTTPHandler {
 				}
 			}
 
+			/// we get the 'Content-Length' field
 			contentLength = -1;
 			contentLengthString = searchHeader("Content-Length");
 
 			if(contentLengthString != null) {
 				contentLength = Integer.parseInt(searchHeader("Content-Length"));
 
+				/// if there is still some data to read, we read the data
 				if(contentLength > content.length()) {
 					size = contentLength - content.length();
 					req = new char[size];
@@ -212,6 +214,11 @@ public class HTTPHandler {
 		return value;
 	}
 
+	/**
+	 * This function is used to known if GZIP compression is accepted.
+	 *
+	 * @return a boolean value indicating if GZIP compression is accepted or not.
+	 */
 	public boolean gzip() {
 		String encoding = searchHeader("Accept-Encoding");
 

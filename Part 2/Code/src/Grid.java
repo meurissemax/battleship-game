@@ -6,7 +6,7 @@ import java.util.Random;
  * Positions on the grid are represented by a value between 0 and ('size' * 'size' - 1).
  *
  * @author Maxime Meurisse & Valentin Vermeylen
- * @version 2019.04.20
+ * @version 2019.04.22
  */
 
 public class Grid {
@@ -16,9 +16,15 @@ public class Grid {
 		grid = new Entity[size * size];
 
 		for(int i = 0; i < grid.length; i++)
-			grid[i] = new Entity(0);
+			grid[i] = new Entity(0); /// by default, all the grid is water
 	}
 
+	/**
+	 * This function is used to add a ship randomly on the grid.
+	 *
+	 * @param id the id of the ship
+	 * @param size the size of the ship
+	 */
 	public void addShip(int id, int size) {
 		int dir = new Random().nextInt(2);
 		int[] pos;
@@ -95,6 +101,14 @@ public class Grid {
 			return true;
 	}
 
+	/**
+	 * This function is used to hit a position on the grid.
+	 * It returns -1 if the position was already hit, else it returns the id of the position (0 for water, > 0 for a ship).
+	 *
+	 * @param pos the position to hit
+	 *
+	 * @return an integer indicating the status of the hit
+	 */
 	public int hitPos(int pos) {
 		if(grid[pos].getHit()) {
 			return -1;

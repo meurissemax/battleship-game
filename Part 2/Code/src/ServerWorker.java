@@ -19,7 +19,7 @@ import java.text.SimpleDateFormat;
  * The server worker handle the game and all actions of a player.
  *
  * @author Maxime Meurisse & Valentin Vermeylen
- * @version 2019.04.20
+ * @version 2019.04.22
  */
 
 public class ServerWorker extends Thread {
@@ -78,7 +78,7 @@ public class ServerWorker extends Thread {
 					position = http.parseQuery(url.getQuery());
 					GameManager currentGame = searchGame(cookie);
 
-					/// if there is position mentionned
+					/// if there is a position mentionned
 					if(position != -1) {
 						/// we check if there is a game, of if the game is finished
 						if(currentGame == null)
@@ -109,6 +109,7 @@ public class ServerWorker extends Thread {
 
 							serverOutStream.print("HTTP/1.1 200 OK\r\n");
 							serverOutStream.print("Connection : close\r\n");
+							serverOutStream.print("Set-Cookie: " + cookie + "; path=/; " + getExpiration(GameConstants.TIMEOUT) + "\r\n");
 							serverOutStream.print("Content-Type: JSON\r\n");
 							serverOutStream.print("\r\n");
 							serverOutStream.print(json);
@@ -124,6 +125,7 @@ public class ServerWorker extends Thread {
 							serverOutStream.print("HTTP/1.1 200 OK\r\n");
 							serverOutStream.print("Connection : close\r\n");
 							serverOutStream.print("Content-Type: text/html; charset=utf-8\r\n");
+							serverOutStream.print("Set-Cookie: " + cookie + "; path=/; " + getExpiration(GameConstants.TIMEOUT) + "\r\n");
 							serverOutStream.print("Transfer-Encoding: chunked\r\n");
 
 							if(http.gzip())
@@ -153,19 +155,10 @@ public class ServerWorker extends Thread {
 								gameList.add(newGame);
 							}
 
-							/// we set the expiration date of the cookie
-							Date expdate = new Date();
-							expdate.setTime(expdate.getTime() + (GameConstants.TIMEOUT));
-
-							DateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", java.util.Locale.US);
-							df.setTimeZone(TimeZone.getTimeZone("GMT"));
-
-							String expires = "expires=" + df.format(expdate);
-
 							serverOutStream.print("HTTP/1.1 200 OK\r\n");
 							serverOutStream.print("Connection : close\r\n");
 							serverOutStream.print("Content-Type: text/html; charset=utf-8\r\n");
-							serverOutStream.print("Set-Cookie: " + cookie + "; path=/; " + expires + "\r\n");
+							serverOutStream.print("Set-Cookie: " + cookie + "; path=/; " + getExpiration(GameConstants.TIMEOUT) + "\r\n");
 							serverOutStream.print("Transfer-Encoding: chunked\r\n");
 
 							if(http.gzip())
@@ -218,6 +211,7 @@ public class ServerWorker extends Thread {
 						serverOutStream.print("HTTP/1.1 200 OK\r\n");
 						serverOutStream.print("Connection : close\r\n");
 						serverOutStream.print("Content-Type: text/html; charset=utf-8\r\n");
+						serverOutStream.print("Set-Cookie: " + cookie + "; path=/; " + getExpiration(GameConstants.TIMEOUT) + "\r\n");
 						serverOutStream.print("Transfer-Encoding: chunked\r\n");
 
 						if(http.gzip())
@@ -394,6 +388,44 @@ public class ServerWorker extends Thread {
 	}
 
 	/**
+	 * This method is used to generate an expiration date for a cookie.
+	 * The date generated is the actual date + a duration 'duration' in ms.
+	 *
+	 * @param duration the lifetime of the cookie, in ms
+	 *
+	 * @return a string that contains an expiration date for a cookie
+	 */
+	private String getExpiration(int duration) {
+		if(duration < 0)
+			duration = -duration;
+
+		Date expdate = new Date();
+		expdate.setTime(expdate.getTime() + duration);
+
+		DateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", java.util.Locale.US);
+		df.setTimeZone(TimeZone.getTimeZone("GMT"));
+
+		return "expires=" + df.format(expdate);
+	}
+	
+	private String randomString(int size) {
+		if(size <= 0)
+			size = 1;
+
+		final String STRINGS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+		int character;
+		StringBuilder builder = new StringBuilder();
+
+		while(size-- != 0) {
+			character = (int)(Math.random() * STRINGS.length());
+			builder.append(STRINGS.charAt(character));
+		}
+
+		return builder.toString();
+	}
+
+	/**
 	 * This method is used to search the game associated to a cookie in the server game list.
 	 *
 	 * @param cookie the cookie of a game
@@ -412,22 +444,5 @@ public class ServerWorker extends Thread {
 				return gameList.get(i);
 
 		return null;
-	}
-	
-	private String randomString(int size) {
-		if(size <= 0)
-			size = 1;
-
-		final String STRINGS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-		int character;
-		StringBuilder builder = new StringBuilder();
-
-		while(size-- != 0) {
-			character = (int)(Math.random() * STRINGS.length());
-			builder.append(STRINGS.charAt(character));
-		}
-
-		return builder.toString();
 	}
 }

@@ -70,16 +70,16 @@ public class HTMLHandler {
 
 		if(fames != null) {
 			html += "<div class='alert alert-info'>The score is the number of shots the player used to sink all boats.</div>";
-			html += "<table class='halloffame text-center'><thead><tr><th scope='col' class='text-left'>Player ID</th><th scope='col'>Score</th><th scope='col'>Date</th></thead><tbody>";
+			html += "<table class='halloffame text-center'><thead><tr><th scope='col'>Rank</th><th scope='col' class='text-left'>Player ID</th><th scope='col'>Score</th><th scope='col'>Date</th></thead><tbody>";
 
 			for(int i = 0; i < fames.length; i++) {
 				split = fames[i].split("&");
 
 				switch(i) {
-					case 0: html += "<tr class='gold-fame'><td class='text-left'>" + split[0] + "</td><td>" + split[1] + "</td><td>" + split[2] + "</td></tr>"; break;
-					case 1: html += "<tr class='silver-fame'><td class='text-left'>" + split[0] + "</td><td>" + split[1] + "</td><td>" + split[2] + "</td></tr>"; break;
-					case 2: html += "<tr class='bronze-fame'><td class='text-left'>" + split[0] + "</td><td>" + split[1] + "</td><td>" + split[2] + "</td></tr>"; break;
-					default: html += "<tr><td class='text-left'>" + split[0] + "</td><td>" + split[1] + "</td><td>" + split[2] + "</td></tr>";
+					case 0: html += "<tr class='gold-fame'><td>" + (i + 1) + "</td><td class='text-left'>" + split[0] + "</td><td>" + split[1] + "</td><td>" + split[2] + "</td></tr>"; break;
+					case 1: html += "<tr class='silver-fame'><td>" + (i + 1) + "</td><td class='text-left'>" + split[0] + "</td><td>" + split[1] + "</td><td>" + split[2] + "</td></tr>"; break;
+					case 2: html += "<tr class='bronze-fame'><td>" + (i + 1) + "</td><td class='text-left'>" + split[0] + "</td><td>" + split[1] + "</td><td>" + split[2] + "</td></tr>"; break;
+					default: html += "<tr><td>" + (i + 1) + "</td><td class='text-left'>" + split[0] + "</td><td>" + split[1] + "</td><td>" + split[2] + "</td></tr>";
 				}
 			}
 
