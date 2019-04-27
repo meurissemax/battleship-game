@@ -16,13 +16,14 @@ import java.text.SimpleDateFormat;
 /**
  * This class implements the server worker.
  * A server worker is created each time a new connection is accepted.
+ * So, a server worker is creater for each new HTTP request.
  * The server worker handle the game and all actions of a player.
  *
  * @author Maxime Meurisse & Valentin Vermeylen
- * @version 2019.04.22
+ * @version 2019.04.27
  */
 
-public class ServerWorker extends Thread {
+public class ServerWorker implements Runnable {
 	private Socket sock;
 	private ArrayList<GameManager> gameList;
 	private InputStream serverInStream;
@@ -46,7 +47,6 @@ public class ServerWorker extends Thread {
 		}
 	}
 
-	@Override
 	public void run() {
 		try {
 			sock.setSoTimeout(GameConstants.TIMEOUT);
@@ -323,7 +323,6 @@ public class ServerWorker extends Thread {
 				throw new HTTPException("404");
 			}
 
-			serverOutStream.close();
 			sock.close();
 		} catch(SocketException se) {
 			System.err.println("ServerWorker : error with socket.");
@@ -336,7 +335,7 @@ public class ServerWorker extends Thread {
 					case "411": httpError(411, "411 Length Required"); break;
 					case "501": httpError(501, "501 Not Implemented"); break;
 					case "505": httpError(505, "505 HTTP Version Not Supported"); break;
-					default : System.err.println("ServerWorker : HTTP exception.");
+					default: System.err.println("ServerWorker : HTTP exception.");
 				}
 			} catch(IOException ioe) {
 				System.err.println("ServerWorker : error during HTTP exception.");

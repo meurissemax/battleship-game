@@ -17,7 +17,7 @@ import java.text.SimpleDateFormat;
  * This class is used to run the server, accept socket, deal with all games and maintains the hall of fame.
  *
  * @author Maxime Meurisse & Valentin Vermeylen
- * @version 2019.04.20
+ * @version 2019.04.27
  */
 
 public class WebServer {
@@ -43,6 +43,8 @@ public class WebServer {
 			System.err.println("WebServer : error using ServerSocket.");
 		} catch(Exception e) {
 			System.err.println(e.getMessage());
+		} finally {
+			threadPool.shutdown();
 		}
 	}
 

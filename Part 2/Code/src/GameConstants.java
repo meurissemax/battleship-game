@@ -5,7 +5,7 @@ import java.util.stream.IntStream;
  * The rules of the game can be completely modified here without causing errors in the rest of the code.
  *
  * @author Maxime Meurisse & Valentin Vermeylen
- * @version 2019.04.20
+ * @version 2019.04.27
  */
 
 public final class GameConstants {
@@ -32,7 +32,7 @@ public final class GameConstants {
 
 	/// Verification of the validity of the constants.
 	static {
-		if(PORT < 8000 || PORT > 8099)
+		if(PORT < 0)
 			printError("invalid port.");
 
 		if(TIMEOUT < 1000)

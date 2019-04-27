@@ -6,7 +6,7 @@ import java.util.Random;
  * Positions on the grid are represented by a value between 0 and ('size' * 'size' - 1).
  *
  * @author Maxime Meurisse & Valentin Vermeylen
- * @version 2019.04.22
+ * @version 2019.04.27
  */
 
 public class Grid {
@@ -83,6 +83,13 @@ public class Grid {
 		}
 	}
 
+	/**
+	 * This function is used to know if a ship is still alive on the grid.
+	 *
+	 * @param id the id of the ship
+	 *
+	 * @return a boolean value indicating if the ship is still alive or not
+	 */
 	public boolean shipAlive(int id) {
 		int size = 0, hit = 0;
 

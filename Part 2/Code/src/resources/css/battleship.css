@@ -2,7 +2,7 @@
  * Stylesheet of the different HTML pages generated.
  *
  * @author Maxime Meurisse & Valentin Vermeylen
- * @version 2019.04.20
+ * @version 2019.04.27
  */
 
 @import url('https://fonts.googleapis.com/css?family=Anton|Nunito');
@@ -163,7 +163,7 @@ button:hover {
 
 .halloffame tbody .bronze-fame {
 	font-size: 20px;
-	background-color: #fab1a0;
+	background-color: #facfb8;
 }
 
 .message {
