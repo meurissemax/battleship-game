@@ -17,7 +17,7 @@ import java.text.SimpleDateFormat;
  * This class is used to run the server, accept socket, deal with all games and maintains the hall of fame.
  *
  * @author Maxime Meurisse & Valentin Vermeylen
- * @version 2019.04.27
+ * @version 2019.05.01
  */
 
 public class WebServer {
@@ -33,8 +33,16 @@ public class WebServer {
 			sSocket = new ServerSocket(GameConstants.PORT);
 			threadPool = Executors.newFixedThreadPool(poolSize);
 
-			while(true)
+			int i = 0;
+
+			while(true) {
 				threadPool.execute(new ServerWorker(sSocket.accept(), gameList));
+				i = (i + 1) % GameConstants.REMOVE_DELAY;
+
+				/// We remove all expired games
+				if(i == 0)
+					gameList.removeIf(e->e.getExpiration() < new Date().getTime());
+			}
 		} catch(ArrayIndexOutOfBoundsException aioobe) {
 			System.err.println("WebServer : missing max thread pool size.");
 		} catch(NumberFormatException nfe) {

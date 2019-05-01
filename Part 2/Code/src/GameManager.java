@@ -1,13 +1,16 @@
+import java.util.Date;
+
 /**
  * This class is used to create a game and manage it (attack a position, display the state of the game, ...).
  * Each game is associated to a cookie.
  *
  * @author Maxime Meurisse & Valentin Vermeylen
- * @version 2019.04.20
+ * @version 2019.05.01
  */
 
 public class GameManager {
 	private int numberTries;
+	private long expiration; /// expiration timestamp of the game, in ms
 	private String cookie; /// the 'cookie' instance variable contains "COOKIE_NAME=COOKIE_VALUE".
 	private Grid grid;
 
@@ -21,6 +24,7 @@ public class GameManager {
 		}
 
 		numberTries = 0;
+		expiration = new Date().getTime() + GameConstants.TIMEOUT;
 		grid = new Grid(GameConstants.GRID_SIZE);
 
 		for(int i = 0; i < GameConstants.SHIP_SIZES.length; i++)
@@ -37,6 +41,14 @@ public class GameManager {
 
 	public int getRemainingTries() {
 		return GameConstants.MAX_TRIES - numberTries;
+	}
+
+	public long getExpiration() {
+		return expiration;
+	}
+
+	public synchronized void updateExpiration(long duration) {
+		expiration = new Date().getTime() + duration;
 	}
 
 	/**
@@ -79,7 +91,7 @@ public class GameManager {
 	 * @param pos the position to hit
 	 * @return an integer indicating the content of the position hit
 	 */
-	public int hitPos(int pos) {
+	public synchronized int hitPos(int pos) {
 		if(pos < 0 || pos >= GameConstants.GRID_SIZE * GameConstants.GRID_SIZE) {
 			System.out.println("Warning : player hit a bad position !");
 			

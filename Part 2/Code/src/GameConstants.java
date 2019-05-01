@@ -5,12 +5,12 @@ import java.util.stream.IntStream;
  * The rules of the game can be completely modified here without causing errors in the rest of the code.
  *
  * @author Maxime Meurisse & Valentin Vermeylen
- * @version 2019.04.27
+ * @version 2019.05.01
  */
 
 public final class GameConstants {
 	public static final int PORT = 8005;
-	public static final int TIMEOUT = 600000; /// socket timeout; 10 minutes
+	public static final int TIMEOUT = 600000; /// socket, cookie and game timeout; 10 minutes
 
 	public static final String COOKIE_NAME = "BATTLESHIP_PLAYER_ID";
 
@@ -26,11 +26,13 @@ public final class GameConstants {
 	public static final int[] SHIP_SIZES = {2, 3, 3, 4, 5};
 	public static final String[] SHIP_NAMES = {"Destroyer", "Submarine", "Cruiser", "Battleship", "Carrier"};
 
-	public static final int MAX_TRIES = 70;
+	public static final int MAX_TRIES = 70; /// maximum tries for a game
 
-	public static final int MAX_FAMES = 10;
+	public static final int MAX_FAMES = 10; /// the number of fames in the hall of fame
 
-	/// Verification of the validity of the constants.
+	public static final int REMOVE_DELAY = 100; /// number of iterations of the server to wait before delete expired games
+
+	/// Verification of the validity of the constants
 	static {
 		if(PORT < 0)
 			printError("invalid port.");
@@ -58,6 +60,9 @@ public final class GameConstants {
 
 		if(MAX_FAMES < 1)
 			printError("number of fames printed must be greater than 0.");
+
+		if(REMOVE_DELAY < 1)
+			printError("delay to remove expired game must be greater than 0.");
 	}
 
 	/// The constructor is private to prevent instantiation of the class.

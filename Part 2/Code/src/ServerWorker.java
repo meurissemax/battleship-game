@@ -20,7 +20,7 @@ import java.text.SimpleDateFormat;
  * The server worker handle the game and all actions of a player.
  *
  * @author Maxime Meurisse & Valentin Vermeylen
- * @version 2019.04.27
+ * @version 2019.05.01
  */
 
 public class ServerWorker implements Runnable {
@@ -105,6 +105,8 @@ public class ServerWorker implements Runnable {
 								System.out.println("Player " + currentGame.getPlayerID() + " lost his game.");
 							}
 
+							currentGame.updateExpiration(GameConstants.TIMEOUT);
+
 							json = "{\"isWin\":\"" + win + "\", \"isLose\":\"" + lose + "\", \"posStatus\":\"" + result + "\", \"numberTries\":\"" + currentGame.getRemainingTries() + "\", \"remainingShips\":\"" + currentGame.getRemainingShips() + "\"}";
 
 							serverOutStream.print("HTTP/1.1 200 OK\r\n");
@@ -122,6 +124,8 @@ public class ServerWorker implements Runnable {
 					else {
 						/// we refresh the game if he exists and he's not finished
 						if(currentGame != null && !currentGame.isWin() && !currentGame.isLose()) {
+							currentGame.updateExpiration(GameConstants.TIMEOUT);
+
 							serverOutStream.print("HTTP/1.1 200 OK\r\n");
 							serverOutStream.print("Connection : close\r\n");
 							serverOutStream.print("Content-Type: text/html; charset=utf-8\r\n");
@@ -208,6 +212,8 @@ public class ServerWorker implements Runnable {
 
 						redirect(GameConstants.PAGE_LOSE);
 					} else {
+						currentGame.updateExpiration(GameConstants.TIMEOUT);
+
 						serverOutStream.print("HTTP/1.1 200 OK\r\n");
 						serverOutStream.print("Connection : close\r\n");
 						serverOutStream.print("Content-Type: text/html; charset=utf-8\r\n");
