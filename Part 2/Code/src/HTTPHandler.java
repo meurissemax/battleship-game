@@ -1,5 +1,6 @@
-import java.io.InputStreamReader;
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.IOException;
 
 import java.net.URL;
@@ -11,20 +12,18 @@ import java.util.ArrayList;
  * This class is used to deal with HTTP requests (parse the request and save some information).
  *
  * @author Maxime Meurisse & Valentin Vermeylen
- * @version 2019.04.22
+ * @version 2019.05.02
  */
 
 public class HTTPHandler {
-	private int numberCharRead;
 	private String content;
 	private URL url;
-	private InputStreamReader inStreamRead;
+	private BufferedReader bufReader;
 	private ArrayList<String> headers;
 
 	public HTTPHandler(InputStream inStream) {
-		numberCharRead = 1000;
 		content = "";
-		inStreamRead = new InputStreamReader(inStream);
+		bufReader = new BufferedReader(new InputStreamReader(inStream));
 		headers = new ArrayList<String>();
 	}
 
@@ -34,74 +33,49 @@ public class HTTPHandler {
 	 * @throws HTTPException a exception if an HTTP exception occured
 	 */
 	public void parse() throws HTTPException {
-		int i, contentLength, size, num;
-		char c;
-		char[] req;
-		String request, contentLengthString, path;
-		String[] split;
+		int contentLength = -1;
+		char[] buffer;
+		String header, length, path;
 
 		try {
-			req = new char[numberCharRead];
-			inStreamRead.read(req, 0, numberCharRead);
-			request = new String(req);
-			split = request.split("\r\n");
+			/* Header of the request */
 
-			i = 0;
+			/// We first read the HTTP request line (first line of the header)
+			header = bufReader.readLine();
 
-			headers.add("");
+			if(header.length() > 0)
+				headers.add(header);
 
-			/// we get the header fields of the HTTP request
-			while(split[i].compareTo("") != 0) {
-				if(i == 0)
-					headers.set(headers.size() - 1, headers.get(headers.size() - 1) + split[i]);
-				else
-					headers.add(split[i]);
+			/// We then read the rest of the header
+			header = bufReader.readLine();
 
-				i++;
+			while(header.length() > 0) {
+				if(header.indexOf(":") == -1)
+					throw new HTTPException("400");
 
-				if(i == split.length) {
-					req = new char[numberCharRead];
-					inStreamRead.read(req, 0, numberCharRead);
-					request = new String(req);
-					split = request.split("\r\n");
-
-					i = 0;
-				}
+				headers.add(header);
+				header = bufReader.readLine();
 			}
 
-			/// we get the content of the query of the HTTP request
-			for(; i < split.length; i++) {
-				for(int j = 0; j < split[i].length(); j++) {
-					if(Character.getNumericValue(split[i].charAt(j)) != -2 || split[i].charAt(j) == '=' || split[i].charAt(j) == '&') {
-						c = split[i].charAt(j);
-						content += c;
-					}
-				}
+			/* Body of the request */
+
+			/// We check if there is a 'Content-Length' field in the header (i.e. if there is a body)
+			length = searchHeader("Content-Length");
+
+			if(length != null) {
+				contentLength = Integer.parseInt(length);
+				buffer = new char[contentLength];
+
+				bufReader.read(buffer, 0, contentLength);
+
+				for(int i = 0; i < buffer.length; i++)
+					if(Character.getNumericValue(buffer[i]) != -2 || buffer[i] == '=' || buffer[i] == '&')
+						content += buffer[i];
 			}
 
-			/// we get the 'Content-Length' field
-			contentLength = -1;
-			contentLengthString = searchHeader("Content-Length");
-
-			if(contentLengthString != null) {
-				contentLength = Integer.parseInt(searchHeader("Content-Length"));
-
-				/// if there is still some data to read, we read the data
-				if(contentLength > content.length()) {
-					size = contentLength - content.length();
-					req = new char[size];
-					inStreamRead.read(req, 0, size);
-					request = new String(req);
-					content += request;
-				}
-			}
-
-			/// we check if the HTTP request is correct
+			/// We check if the HTTP request is correct
 			if(!headers.get(0).contains("HTTP/1.1"))
 				throw new HTTPException("505");
-
-			if(!headers.get(0).contains("GET") && !headers.get(0).contains("POST") && !headers.get(0).contains("HEAD") && !headers.get(0).contains("PUT") && !headers.get(0).contains("DELETE") && !headers.get(0).contains("CONNECT") && !headers.get(0).contains("OPTIONS") && !headers.get(0).contains("TRACE") && !headers.get(0).contains("PATCH"))
-				throw new HTTPException("405");
 
 			if(!headers.get(0).contains("GET") && !headers.get(0).contains("POST"))
 				throw new HTTPException("501");
@@ -112,7 +86,7 @@ public class HTTPHandler {
 			if(headers.get(0).contains("POST") && contentLength == -1)
 				throw new HTTPException("411");
 
-			path = headers.get(0).substring(headers.get(0).indexOf('/'), headers.get(0).indexOf(' ', headers.get(0).indexOf('/')));
+			path = headers.get(0).substring(headers.get(0).indexOf("/"), headers.get(0).indexOf(" ", headers.get(0).indexOf("/")));
 			url = new URL(new URL("http://" + searchHeader("Host")), path);
 		} catch(MalformedURLException mue) {
 			throw new HTTPException("400");
@@ -180,22 +154,44 @@ public class HTTPHandler {
 
 	/**
 	 * This method is used to parse the query of an URL, i.e. to return its content.
-	 * This function only works for the first value, and if this value is an integer.
-	 * By example, if the query is "pos=32", the function returns 32.
+	 * It only returns the value of the query 'pos', if it exists, else returns -1.
+	 * By example, if the query is "pos=32&abc=def", the function returns 32.
 	 *
 	 * @param query the query to parse
 	 *
-	 * @return the value of the query, parsed to an integer
+	 * @return the value of the query 'pos', parsed to an integer
 	 */
 	public int parseQuery(String query) {
 		int value = -1;
-		String[] split;
+		String posQuery;
+		String[] queries, split;
 
 		if(query == null)
 			return value;
 
 		query = query.replaceAll("\\s+", "");
-		split = query.split("=");
+
+		if(query.contains("&")) {
+			queries = query.split("&");
+
+			for(int i = 0; i < queries.length; i++) {
+				split = queries[i].split("=");
+
+				if(split[0].equals(GameConstants.QUERY_NAME)) {
+					posQuery = queries[i];
+					break;
+				}
+			}
+
+			return value;
+		} else {
+			split = query.split("=");
+
+			if(split[0].equals(GameConstants.QUERY_NAME))
+				posQuery = query;
+			else
+				return value;
+		}
 
 		if(split.length > 0) {
 			split[1] = split[1].replaceAll("[^0-9]", "");

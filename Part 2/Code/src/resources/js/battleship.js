@@ -38,7 +38,7 @@ document.getElementById('player').innerHTML = "Player ID : <b>" + playerID + "</
 function hitPos(pos) {
 	var xhr = new XMLHttpRequest();
 
-	xhr.open('GET', pagePlay + '?pos=' + pos, true);
+	xhr.open('GET', pagePlay + '?' + queryName + '=' + pos, true);
 	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
 	xhr.addEventListener('readystatechange', function() {

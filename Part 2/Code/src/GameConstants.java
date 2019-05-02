@@ -5,13 +5,14 @@ import java.util.stream.IntStream;
  * The rules of the game can be completely modified here without causing errors in the rest of the code.
  *
  * @author Maxime Meurisse & Valentin Vermeylen
- * @version 2019.05.01
+ * @version 2019.05.02
  */
 
 public final class GameConstants {
 	public static final int PORT = 8005;
 	public static final int TIMEOUT = 600000; /// socket, cookie and game timeout; 10 minutes
 
+	public static final String QUERY_NAME = "pos"; /// name of the query to read in the request (i.e. '?pos=42&...')
 	public static final String COOKIE_NAME = "BATTLESHIP_PLAYER_ID";
 
 	public static final String PAGE_PLAY = "/play.html";
@@ -40,7 +41,7 @@ public final class GameConstants {
 		if(TIMEOUT < 1000)
 			printError("timeout too short.");
 
-		if(COOKIE_NAME == null || PAGE_PLAY == null || PAGE_HALL_OF_FAME == null || PAGE_WIN == null || PAGE_LOSE == null)
+		if(QUERY_NAME == null || COOKIE_NAME == null || PAGE_PLAY == null || PAGE_HALL_OF_FAME == null || PAGE_WIN == null || PAGE_LOSE == null)
 			printError("data can't be empty.");
 
 		if(GRID_SIZE < 2 || GRID_SIZE > 10)
