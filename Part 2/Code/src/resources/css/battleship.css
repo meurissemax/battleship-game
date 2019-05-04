@@ -2,7 +2,7 @@
  * Stylesheet of the different HTML pages generated.
  *
  * @author Maxime Meurisse & Valentin Vermeylen
- * @version 2019.04.27
+ * @version 2019.05.04
  */
 
 @import url('https://fonts.googleapis.com/css?family=Anton|Nunito');
@@ -72,6 +72,12 @@ button:hover {
 	margin: 0;
 	padding: 0;
 	font-size: 22px;
+}
+
+.sources {
+	margin: 0;
+	padding: 0;
+	font-size: 16px;
 }
 
 .container {

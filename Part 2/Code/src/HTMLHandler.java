@@ -12,7 +12,7 @@ import java.util.zip.GZIPOutputStream;
  * This class is used to handle the generation and compression of all HTML pages.
  *
  * @author Maxime Meurisse & Valentin Vermeylen
- * @version 2019.05.02
+ * @version 2019.05.04
  */
 
 public class HTMLHandler {
@@ -193,7 +193,7 @@ public class HTMLHandler {
 	 * @return the HTML code of the header of a page
 	 */
 	private String getHeader() {
-		return "<!doctype html><html lang='fr'><head><meta charset='utf-8'><meta name='author' content='Maxime Meurisse, Valentin Vermeylen'><link rel='icon' type='image/png' href='" + images.getImage("favicon") + "'><link rel='shortcut icon' type='image/png' href='" + images.getImage("favicon") + "'><link rel='apple-touch-icon' href='" + images.getImage("apple-touch-icon") + "'><style>" + loadFile(CSS_PATH) + "</style><title>Battleship</title></head><body><div class='header text-center'><p class='main-title'>The battleship game</p><p class='description'>A game developed by <b>Maxime Meurisse</b> and <b>Valentin Vermeylen</b> as part of a project of the <a href='https://uliege.be/' target='_blank'>University of Liège</a>.</p></div><div class='container centered'>";
+		return "<!doctype html><html lang='fr'><head><meta charset='utf-8'><meta name='author' content='Maxime Meurisse, Valentin Vermeylen'><link rel='icon' type='image/png' href='" + images.getImage("favicon") + "'><link rel='shortcut icon' type='image/png' href='" + images.getImage("favicon") + "'><link rel='apple-touch-icon' href='" + images.getImage("apple-touch-icon") + "'><style>" + loadFile(CSS_PATH) + "</style><title>Battleship</title></head><body><div class='header text-center'><p class='main-title'>The battleship game</p><p class='description'>A game developed by <b>Maxime Meurisse</b> and <b>Valentin Vermeylen</b> as part of a project of the <a href='https://uliege.be/' target='_blank'>University of Liège</a>.</p><p class='sources'>Most of the images used come from <a href='https://www.flaticon.com' target='_blank'>flaticon</a>.</p></div><div class='container centered'>";
 	}
 
 	/**
