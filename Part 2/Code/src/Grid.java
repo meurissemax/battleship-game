@@ -6,7 +6,7 @@ import java.util.Random;
  * Positions on the grid are represented by a value between 0 and ('size' * 'size' - 1).
  *
  * @author Maxime Meurisse & Valentin Vermeylen
- * @version 2019.04.27
+ * @version 2019.05.11
  */
 
 public class Grid {
@@ -26,17 +26,10 @@ public class Grid {
 	 * @param size the size of the ship
 	 */
 	public void addShip(int id, int size) {
-		int dir = new Random().nextInt(2);
-		int[] pos;
-
-		if(dir == 0)
-			pos = genPos(size, true); /// horizontal
-		else
-			pos = genPos(size, false); /// vertical
+		int[] pos = genPos(size); /// we get 'size' random valid positions on the grid
 
 		for(int i = 0; i < pos.length; i++)
 			grid[pos[i]].setID(id);
-
 	}
 
 	/**
@@ -136,19 +129,20 @@ public class Grid {
 
 	/**
 	 * This function is used to generate an array of valid positions in the grid of size 'size'.
-	 * Positions are horizontaly or verticaly directed depending of the variable 'dir'.
 	 *
 	 * @param size the size of the ships, i.e. the number of consecutive valid positions in the grid to generate
-	 * @param dir a boolean value indicating if positions are horizontaly directed or not
 	 *
 	 * @return an array of consecutive valid positions in the grid
 	 */
-	private int[] genPos(int size, boolean dir) {
-		int pos, limit, i, j, tmp;
+	private int[] genPos(int size) {
+		int pos, limit, i, j, tmp, ran;
 		int[] find = new int[size];
-		boolean valid = false;
+		boolean valid = false, dir;
 
 		while(!valid) {
+			ran = new Random().nextInt(2);
+			dir = (ran == 0) ? true : false;
+
 			/// we find a free position 'pos' in the grid
 			do {
 				tmp = (dir) ? (grid.length - size) : (grid.length - (size * GameConstants.GRID_SIZE));

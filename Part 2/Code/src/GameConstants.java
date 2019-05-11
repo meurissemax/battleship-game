@@ -10,10 +10,10 @@ import java.util.stream.IntStream;
 
 public final class GameConstants {
 	public static final int PORT = 8005;
-	public static final int TIMEOUT = 600000; /// socket, cookie and game timeout; 10 minutes
+	public static final int TIMEOUT = 600000; /// socket, cookie and game timeout -> 10 minutes
 
 	public static final String QUERY_NAME = "pos"; /// name of the query to read in the request (i.e. '?pos=42&...')
-	public static final String COOKIE_NAME = "BATTLESHIP_PLAYER_ID";
+	public static final String COOKIE_NAME = "BATTLESHIP_PLAYER_ID"; /// name of the cookie on the client
 
 	public static final String PAGE_PLAY = "/play.html";
 	public static final String PAGE_HALL_OF_FAME = "/halloffame.html";

@@ -12,7 +12,7 @@ import java.util.Base64;
  * All images are compressed.
  *
  * @author Maxime Meurisse & Valentin Vermeylen
- * @version 2019.04.20
+ * @version 2019.05.11
  */
 
 public class ImageHandler {
@@ -44,11 +44,13 @@ public class ImageHandler {
 		String base64Image = "";
 		File file = new File(filepath);
 
-		try(FileInputStream imageInFile = new FileInputStream(file)) {
+		try {
+			FileInputStream imageInFile = new FileInputStream(file);
 			byte imageData[] = new byte[(int) file.length()];
 
 			imageInFile.read(imageData);
 			base64Image = Base64.getEncoder().encodeToString(imageData);
+			imageInFile.close();
 		} catch(FileNotFoundException fnfe) {
 			System.err.println("ImageHandler : file not found.");
 		} catch(IOException ioe) {

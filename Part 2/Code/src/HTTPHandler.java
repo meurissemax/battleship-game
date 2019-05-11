@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * This class is used to deal with HTTP requests (parse the request and save some information).
  *
  * @author Maxime Meurisse & Valentin Vermeylen
- * @version 2019.05.02
+ * @version 2019.05.11
  */
 
 public class HTTPHandler {
@@ -21,20 +21,16 @@ public class HTTPHandler {
 	private BufferedReader bufReader;
 	private ArrayList<String> headers;
 
-	public HTTPHandler(InputStream inStream) {
-		content = "";
-		bufReader = new BufferedReader(new InputStreamReader(inStream));
-		headers = new ArrayList<String>();
-	}
-
 	/**
-	 * This method is used to parse an HTTP request, i.e. to read its header and save the content.
+	 * This constructor parse an HTTP request, i.e. to read its header and save the content.
 	 *
 	 * @throws HTTPException a exception if an HTTP exception occured
 	 */
-	public void parse() throws HTTPException {
-		int contentLength = -1;
-		char[] buffer;
+	public HTTPHandler(InputStream inStream) throws HTTPException {
+		content = "";
+		bufReader = new BufferedReader(new InputStreamReader(inStream));
+		headers = new ArrayList<String>();
+
 		String header, length, path;
 
 		try {
@@ -60,31 +56,34 @@ public class HTTPHandler {
 			/* Body of the request */
 
 			/// We check if there is a 'Content-Length' field in the header (i.e. if there is a body)
-			length = searchHeader("Content-Length");
+			if(getMethod() == "POST") {
+				length = searchHeader("Content-Length");
 
-			if(length != null) {
-				contentLength = Integer.parseInt(length);
-				buffer = new char[contentLength];
+				if(length != null) {
+					int contentLength = Integer.parseInt(length);
+					char[] buffer = new char[contentLength];
 
-				bufReader.read(buffer, 0, contentLength);
-
-				for(int i = 0; i < buffer.length; i++)
-					if(Character.getNumericValue(buffer[i]) != -2 || buffer[i] == '=' || buffer[i] == '&')
-						content += buffer[i];
+					if(bufReader.read(buffer, 0, contentLength) == contentLength)
+						for(int i = 0; i < buffer.length; i++)
+							if(Character.getNumericValue(buffer[i]) != -2 || buffer[i] == '=' || buffer[i] == '&')
+								content += buffer[i];
+				} else {
+					throw new HTTPException("411");
+				}
 			}
 
 			/// We check if the HTTP request is correct
 			if(!headers.get(0).contains("HTTP/1.1"))
 				throw new HTTPException("505");
 
+			if(headers.get(0).contains("HEAD") || headers.get(0).contains("PUT") || headers.get(0).contains("DELETE") || headers.get(0).contains("CONNECT") || headers.get(0).contains("OPTIONS") || headers.get(0).contains("TRACE") || headers.get(0).contains("PATCH"))
+				throw new HTTPException("405");
+
 			if(!headers.get(0).contains("GET") && !headers.get(0).contains("POST"))
 				throw new HTTPException("501");
 
-			if(headers.get(0).indexOf('/') == -1)
+			if(headers.get(0).indexOf('/') == headers.get(0).lastIndexOf('/'))
 				throw new HTTPException("400");
-
-			if(headers.get(0).contains("POST") && contentLength == -1)
-				throw new HTTPException("411");
 
 			path = headers.get(0).substring(headers.get(0).indexOf("/"), headers.get(0).indexOf(" ", headers.get(0).indexOf("/")));
 			url = new URL(new URL("http://" + searchHeader("Host")), path);

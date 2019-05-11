@@ -20,7 +20,7 @@ import java.text.SimpleDateFormat;
  * The server worker handle the game and all actions of a player.
  *
  * @author Maxime Meurisse & Valentin Vermeylen
- * @version 2019.05.01
+ * @version 2019.05.11
  */
 
 public class ServerWorker implements Runnable {
@@ -38,7 +38,6 @@ public class ServerWorker implements Runnable {
 			this.gameList = gameList;
 			serverInStream = this.sock.getInputStream();
 			serverOutStream = new PrintWriter(this.sock.getOutputStream(), true);
-			http = new HTTPHandler(serverInStream);
 			html = new HTMLHandler();
 		} catch(IOException ioe) {
 			System.err.println("ServerWorker : unable to deal with stream.");
@@ -50,7 +49,7 @@ public class ServerWorker implements Runnable {
 	public void run() {
 		try {
 			sock.setSoTimeout(GameConstants.TIMEOUT);
-			http.parse();
+			http = new HTTPHandler(serverInStream);
 			url = http.getURL();
 
 			int position;
@@ -328,8 +327,6 @@ public class ServerWorker implements Runnable {
 			else {
 				throw new HTTPException("404");
 			}
-
-			sock.close();
 		} catch(SocketException se) {
 			System.err.println("ServerWorker : error with socket.");
 		} catch(HTTPException httpe) {
@@ -352,6 +349,12 @@ public class ServerWorker implements Runnable {
 			System.err.println("ServerWorker : an IO exception occured.");
 		} catch(Exception e) {
 			System.err.println(e.getMessage());
+		} finally {
+			try {
+				sock.close();
+			} catch(IOException ioe) {
+				System.err.println("ServerWorker : unable to close socket.");
+			}
 		}
 	}
 
@@ -438,10 +441,7 @@ public class ServerWorker implements Runnable {
 	 * @return the game associated to the cookie 'cookie'
 	 */
 	private GameManager searchGame(String cookie) {
-		if(cookie == null)
-			return null;
-
-		if(gameList.size() == 0)
+		if(cookie == null || gameList.size() == 0)
 			return null;
 
 		for(int i = 0; i < gameList.size(); i++)

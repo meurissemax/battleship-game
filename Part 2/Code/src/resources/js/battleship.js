@@ -1,31 +1,5 @@
-/**
- * This function is used to recover the content of a cookie.
- *
- * @param cname the cookie name
- * @return the content of the cookie 'cname'
- */
-function getCookie(cname) {
-	var name = cname + "=";
-	var decodedCookie = decodeURIComponent(document.cookie);
-	var ca = decodedCookie.split(';');
-
-	for(var i = 0; i < ca.length; i++) {
-		var c = ca[i];
-
-		while(c.charAt(0) == ' ')
-			c = c.substring(1);
-
-		if(c.indexOf(name) == 0)
-			return c.substring(name.length, c.length);
-	}
-
-	return "";
-}
-
-var playerID = getCookie(cookieName);
-
+/* If javascript is enabled, we show the HTML code about "How to play (with JS)". */
 document.getElementById('jshow').style.display = "block";
-document.getElementById('player').innerHTML = "Player ID : <b>" + playerID + "</b>";
 
 /**
  * This function is used to send an AJAX request to the server.
@@ -53,20 +27,24 @@ function hitPos(pos) {
 			var triesHTML = document.getElementById('numberTries');
 			var shipsHTML = document.getElementById('remainingShips');
 
+			/* We update the status of the concerned position. */
 			if(posStatus == 0)
 				posHTML.innerHTML = "<td id='" + pos + "' onclick='hitPos(" + pos + ")'><img src='" + imgMiss + "' width='50' height='50'></td>";
 
 			if(posStatus > 0)
 				posHTML.innerHTML = "<td id='" + pos + "' onclick='hitPos(" + pos + ")'><img src='" + imgHit + "' width='50' height='50'></td>";
 
+			/* We update data about game. */
 			triesHTML.innerHTML = "<td class='text-center' id='numberTries'><b>" + numberTries + "</b></td>";
 			shipsHTML.innerHTML = "<td class='text-center' id='remainingShips'><b>" + remainingShips + "</b></td>";
 
+			/* If player won, we redirect to win page. */
 			if(result['isWin'] == "true")
 				setTimeout(function () {
 					document.location = "/win.html";
 				}, 750);
 
+			/* If player lost, we redirect to lose page. */
 			if(result['isLose'] == "true")
 				setTimeout(function () {
 					document.location = "/lose.html";

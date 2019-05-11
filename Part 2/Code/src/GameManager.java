@@ -5,7 +5,7 @@ import java.util.Date;
  * Each game is associated to a cookie.
  *
  * @author Maxime Meurisse & Valentin Vermeylen
- * @version 2019.05.01
+ * @version 2019.05.11
  */
 
 public class GameManager {
@@ -24,9 +24,10 @@ public class GameManager {
 		}
 
 		numberTries = 0;
-		expiration = new Date().getTime() + GameConstants.TIMEOUT;
+		expiration = new Date().getTime() + GameConstants.TIMEOUT; /// set to actual timestamp
 		grid = new Grid(GameConstants.GRID_SIZE);
 
+		/// We add ships on the grid
 		for(int i = 0; i < GameConstants.SHIP_SIZES.length; i++)
 			grid.addShip(i + 1, GameConstants.SHIP_SIZES[i]);
 
@@ -76,7 +77,7 @@ public class GameManager {
 	 * @return the player ID
 	 */
 	public String getPlayerID() {
-		String[] split = cookie.split("=");
+		String[] split = cookie.split("="); /// because player ID is the content of the cookie
 
 		return split[1];
 	}
@@ -157,9 +158,7 @@ public class GameManager {
 	}
 
 	public boolean isWin() {
-		int remainingShips = getRemainingShips();
-
-		if(remainingShips == 0 && numberTries <= GameConstants.MAX_TRIES)
+		if(getRemainingShips() == 0 && numberTries <= GameConstants.MAX_TRIES)
 			return true;
 		else
 			return false;

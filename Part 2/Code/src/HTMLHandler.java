@@ -12,7 +12,7 @@ import java.util.zip.GZIPOutputStream;
  * This class is used to handle the generation and compression of all HTML pages.
  *
  * @author Maxime Meurisse & Valentin Vermeylen
- * @version 2019.05.04
+ * @version 2019.05.11
  */
 
 public class HTMLHandler {
@@ -258,7 +258,7 @@ public class HTMLHandler {
 	 * @return the HTML code of the footer of a page
 	 */
 	private String getFooter() {
-		return "<br style='clear: both;'></div><script type='text/javascript'>var imgMiss = '" + images.getImage("miss") + "', imgHit = '" + images.getImage("hit") + "', cookieName = '" + GameConstants.COOKIE_NAME + "', pagePlay = '" + GameConstants.PAGE_PLAY + "', queryName = '" + GameConstants.QUERY_NAME + "'; " + loadFile(JS_PATH) + "</script></body></html>";
+		return "<br style='clear: both;'></div><script type='text/javascript'>var imgMiss = '" + images.getImage("miss") + "', imgHit = '" + images.getImage("hit") + "', pagePlay = '" + GameConstants.PAGE_PLAY + "', queryName = '" + GameConstants.QUERY_NAME + "'; " + loadFile(JS_PATH) + "</script></body></html>";
 	}
 
 	/**
@@ -276,6 +276,8 @@ public class HTMLHandler {
 
 			while((line = bufReader.readLine()) != null)
 				content += line;
+
+			bufReader.close();
 		} catch(IOException ioe) {
 			System.err.println("HTMLHandler : unable to read in buffer.");
 		} catch(Exception e) {
