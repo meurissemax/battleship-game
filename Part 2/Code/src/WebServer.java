@@ -14,7 +14,7 @@ import java.text.SimpleDateFormat;
 
 /**
  * This class is the main class of the project.
- * This class is used to run the server, accept socket, deal with all games and maintains the hall of fame.
+ * This class is used to run the server, accept socket, deal with all games and maintain the hall of fame.
  *
  * @author Maxime Meurisse & Valentin Vermeylen
  * @version 2019.05.01
@@ -57,9 +57,10 @@ public class WebServer {
 	}
 
 	/**
-	 * This method is used to add in the hall of fame a score.
-	 * The hall of fame contains the score of all games, and is always sorted by score ascending.
-	 * This method is synchronized because all workers can access it at the same time to add a fame.
+	 * This method is used to add a score in the hall of fame.
+	 * The hall of fame contains the score of all games, and is always sorted by score in an 
+	 * ascending way.
+	 * This method is synchronized because all workers could access it at the same time to add a score.
 	 *
 	 * @param playerID the ID of the player that performs a score
 	 * @param score the score of the player
@@ -153,6 +154,9 @@ public class WebServer {
 		}
 	}
 	
+	/**
+	 * This method is used to sort the list of scores.
+	 */
 	private static void sortFames() {
 		Collections.sort(fames, new Comparator<String>() {
 			@Override

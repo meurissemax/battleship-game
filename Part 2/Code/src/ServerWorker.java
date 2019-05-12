@@ -16,8 +16,8 @@ import java.text.SimpleDateFormat;
 /**
  * This class implements the server worker.
  * A server worker is created each time a new connection is accepted.
- * So, a server worker is creater for each new HTTP request.
- * The server worker handle the game and all actions of a player.
+ * So a server worker is created for each new HTTP request.
+ * The server worker handles the game and all actions performed by a player.
  *
  * @author Maxime Meurisse & Valentin Vermeylen
  * @version 2019.05.11
@@ -77,7 +77,7 @@ public class ServerWorker implements Runnable {
 					position = http.parseQuery(url.getQuery());
 					GameManager currentGame = searchGame(cookie);
 
-					/// if there is a position mentionned
+					/// if there is a position mentioned
 					if(position != -1) {
 						/// we check if there is a game, of if the game is finished
 						if(currentGame == null)
@@ -121,7 +121,7 @@ public class ServerWorker implements Runnable {
 
 					/// if no position is mentionned
 					else {
-						/// we refresh the game if he exists and he's not finished
+						/// we refresh the game if it exists and it is not finished
 						if(currentGame != null && !currentGame.isWin() && !currentGame.isLose()) {
 							currentGame.updateExpiration(GameConstants.TIMEOUT);
 
@@ -416,6 +416,13 @@ public class ServerWorker implements Runnable {
 		return "expires=" + df.format(expdate);
 	}
 	
+	/**
+	 * This method is used to generate a random string of size 'size'.
+	 *
+	 * @param size the size of the string to be generated
+	 *
+	 * @return the random string of size 'size'.
+	 */
 	private String randomString(int size) {
 		if(size <= 0)
 			size = 1;

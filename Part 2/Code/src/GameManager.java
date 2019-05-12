@@ -130,11 +130,11 @@ public class GameManager {
 	/**
 	 * This function is used to get the status of a position.
 	 * It returns :
-	 * 		- 1 if the position is hit and if there is a ship on this position
-	 * 		- -1 if the position is hit and if there is no ship on this position
+	 * 		- 1 if the position is hit and if there is a ship at this position
+	 * 		- -1 if the position is hit and if there is no ship at this position
 	 * 		- 0 if the position isn't hit
 	 *
-	 * @param pos a position in the grid
+	 * @param pos a position on the grid
 	 * @return an integer indicating the status of the position
 	 */
 	public int getPosStatus(int pos) {

@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * This class is used to deal with HTTP requests (parse the request and save some information).
  *
  * @author Maxime Meurisse & Valentin Vermeylen
- * @version 2019.05.11
+ * @version 2019.05.12
  */
 
 public class HTTPHandler {
@@ -22,9 +22,9 @@ public class HTTPHandler {
 	private ArrayList<String> headers;
 
 	/**
-	 * This constructor parse an HTTP request, i.e. to read its header and save the content.
+	 * This constructor parses an HTTP request, i.e. reads its header and saves the content.
 	 *
-	 * @throws HTTPException a exception if an HTTP exception occured
+	 * @throws HTTPException an exception if an HTTP exception occured
 	 */
 	public HTTPHandler(InputStream inStream) throws HTTPException {
 		content = "";
@@ -55,7 +55,8 @@ public class HTTPHandler {
 
 			/* Body of the request */
 
-			/// We check if there is a 'Content-Length' field in the header (i.e. if there is a body)
+			/// We check if there is a 'Content-Length' field in the header (i.e. if there is a body),
+			/// and put it in content if there is one.
 			if(getMethod() == "POST") {
 				length = searchHeader("Content-Length");
 
@@ -132,7 +133,7 @@ public class HTTPHandler {
 			content = cookies.split(";");
 
 			for(int i = 0; i < content.length; i++) {
-				content[i] = content[i].replaceAll("\\s+", "");
+				content[i] = content[i].replaceAll("\\s+", ""); // delete spaces.
 				split = content[i].split("=");
 
 				if(split[0].equals(cookieName))
@@ -154,7 +155,7 @@ public class HTTPHandler {
 	/**
 	 * This method is used to parse the query of an URL, i.e. to return its content.
 	 * It only returns the value of the query 'pos', if it exists, else returns -1.
-	 * By example, if the query is "pos=32&abc=def", the function returns 32.
+	 * For example, if the query is "pos=32&abc=def", the function returns 32.
 	 *
 	 * @param query the query to parse
 	 *
@@ -162,7 +163,6 @@ public class HTTPHandler {
 	 */
 	public int parseQuery(String query) {
 		int value = -1;
-		String posQuery;
 		String[] queries, split;
 
 		if(query == null)
@@ -170,28 +170,30 @@ public class HTTPHandler {
 
 		query = query.replaceAll("\\s+", "");
 
+		/// If there is multiple queries ("pos=45&test=abc" for exemple)
 		if(query.contains("&")) {
 			queries = query.split("&");
 
-			for(int i = 0; i < queries.length; i++) {
-				split = queries[i].split("=");
+			int i = 0;
 
-				if(split[0].equals(GameConstants.QUERY_NAME)) {
-					posQuery = queries[i];
+			do {
+				split = queries[i++].split("=");
+
+				if(split[0].equals(GameConstants.QUERY_NAME))
 					break;
-				}
-			}
 
-			return value;
-		} else {
+			} while(i < queries.length);
+		}
+
+		/// If there is only one query ("pos=42" for exemple)
+		else {
 			split = query.split("=");
 
-			if(split[0].equals(GameConstants.QUERY_NAME))
-				posQuery = query;
-			else
+			if(!split[0].equals(GameConstants.QUERY_NAME))
 				return value;
 		}
 
+		/// If we found the concerned query (here, "pos")
 		if(split.length > 0) {
 			split[1] = split[1].replaceAll("[^0-9]", "");
 
@@ -210,7 +212,7 @@ public class HTTPHandler {
 	}
 
 	/**
-	 * This function is used to known if GZIP compression is accepted.
+	 * This function is used to know if GZIP compression is accepted.
 	 *
 	 * @return a boolean value indicating if GZIP compression is accepted or not.
 	 */
@@ -228,7 +230,8 @@ public class HTTPHandler {
 	/**
 	 * This function is used to search a specific header in the header field of the HTTP request.
 	 * It returns the content of this header.
-	 * For exemple, if the HTTP request contains "Cookie: cookie1=value1", the method "searchHeader('Cookie')" would return "cookie1=value1".
+	 * For exemple, if the HTTP request contains "Cookie: cookie1=value1",
+	 * the method "searchHeader('Cookie')" would return "cookie1=value1".
 	 *
 	 * @param name the header name
 	 *

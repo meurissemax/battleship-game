@@ -6,7 +6,7 @@ import java.util.Random;
  * Positions on the grid are represented by a value between 0 and ('size' * 'size' - 1).
  *
  * @author Maxime Meurisse & Valentin Vermeylen
- * @version 2019.05.11
+ * @version 2019.05.12
  */
 
 public class Grid {
@@ -103,7 +103,8 @@ public class Grid {
 
 	/**
 	 * This function is used to hit a position on the grid.
-	 * It returns -1 if the position was already hit, else it returns the id of the position (0 for water, > 0 for a ship).
+	 * It returns -1 if the position was already hit, else
+	 * it returns the id of the position (0 for water, > 0 for a ship).
 	 *
 	 * @param pos the position to hit
 	 *
@@ -141,7 +142,7 @@ public class Grid {
 
 		while(!valid) {
 			ran = new Random().nextInt(2);
-			dir = (ran == 0) ? true : false;
+			dir = (ran == 0) ? true : false; /// orientation (true == horizontal)
 
 			/// we find a free position 'pos' in the grid
 			do {
@@ -157,7 +158,8 @@ public class Grid {
 
 			/// we check if the ('size' - 1) position around 'pos' are valid
 			while(i < pos + limit) {
-				if(dir)
+				if(dir) // /horizontal
+					// /As we are in a 1D array, make sure we do not go beyond the "width" of the grid.
 					if((i - (i % GameConstants.GRID_SIZE)) - ((i - 1) - ((i - 1) % GameConstants.GRID_SIZE)) == GameConstants.GRID_SIZE)
 						valid = false;
 
