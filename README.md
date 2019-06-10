@@ -13,3 +13,8 @@ Project realized as part of the *Introduction to computer networking* course giv
 
 * **Maxime Meurisse** - [meurissemax](https://github.com/meurissemax)
 * **Valentin Vermeylen** - [ValentinVermeylen](https://github.com/ValentinVermeylen)
+
+## Scores
+
+* Part 1 received a score of **18/20**.
+* Part 2 received a score of **19.5/20**.
