@@ -1,0 +1,99 @@
+\documentclass[a4paper, 12pt]{article}
+
+\def\languages{french, english}
+
+%%%%%%%%%%%%%%%%%%% Libraries
+
+\input{include/libraries/bibliography.tex}
+\input{include/libraries/default.tex}
+\input{include/libraries/figures.tex}
+\input{include/libraries/informatics.tex}
+\input{include/libraries/mathematics.tex}
+\input{include/libraries/theorems.tex}
+\input{include/libraries/units.tex}
+
+\input{include/languages/french.tex}
+
+%%%%%%%%%%%%%%%%%%% Titlepage
+
+\def\logopath{resources/pdf/logo-uliege.pdf}
+\def\toptitle{University of Liège}
+\title{Project (part 2) : Battleship}
+\def\subtitle{Introduction to computer networking}
+%\def\authorhead{Author}
+\author{
+    Maxime \textsc{Meurisse} (20161278)\\
+    Valentin \textsc{Vermeylen} (20162864)\\
+}
+%\def\rightauthorhead{}
+%\def\rightauthor{}
+\def\context{3\ieme{} year of Bachelor Civil Engineer}
+\date{Academic year 2018-2019}
+
+%%%%%%%%%%%%%%%%%%%
+
+\fancyhead[R]{}
+
+%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+	\input{include/titlepages/default.tex}
+	\section{Software architecture}
+	This project consists of several files :
+	\begin{itemize}
+	    \item \texttt{battleship.css} : file containing the style of the different web pages;
+	    \item \texttt{battleship.js} : file containing the javascript of the project. He takes care of sending the \texttt{GET} request in \texttt{AJAX};
+	    \item \texttt{Entity.java} : an entity is an element of the game grid (water or ship);
+	    \item \texttt{GameConstants.java} : contains all the game constants. The game can be completely modified with this file, without causing any error;
+	    \item \texttt{GameManager.java} : this class is used to create a new game and play it (attack a position, see the status of the game, ...);
+	    \item \texttt{Grid.java} : this class implements the game grid and the operations that can be done;
+	    \item \texttt{HTMLHandler.java} : this class is used to generate and compress the \texttt{HTML} code of each web page;
+	    \item \texttt{HTTPException.java} : this class is used to raise custom exceptions, especially \texttt{HTTP} exceptions;
+	    \item \texttt{HTTPHandler.java} : this class is used to read \texttt{HTTP} requests;
+	    \item \texttt{ImageHandler.java} : this class is used to compress the images of the game in base 64 and retrieve them on the web pages;
+	    \item \texttt{ServerWorker.java} : a worker can process an \texttt{HTTP} request (redirection to a page, attack a position, ...);
+	    \item \texttt{WebServer.java} : main class of the project. This is the server that creates the workers and manages the hall of fame;
+	    \item some \texttt{png} files.
+	\end{itemize}
+	\subsection{\texttt{battleship.js}}
+	This file contains the javascript code of the project. This one consists mainly of a \texttt{hitPos} function. When the user clicks on a position (and javascript is enabled), this function is called with the position as argument. An \texttt{AJAX} request containing this position is then sent to the server. The server response is read and the web page is updated.
+	\subsection{\texttt{Entity.java}, \texttt{Grid.java} and \texttt{GameManager.java}}
+	These classes, already used in project 1, are the implementation of the game itself. They could work independently of all classes concerning the server.\par
+	When a player wishes to play a game, he must instantiate a new \texttt{GameManager}. A game is therefore represented by a \texttt{GameManager}.
+	\subsection{\texttt{HTTPHandler.java}}
+	This class is used to read an \texttt{HTTP} request and save the content (request type, header information, content). Methods are used to retrieve the saved content.\par
+	If the request is incorrect, an \texttt{HTTPException} is thrown.
+	\subsection{\texttt{ServerWorker.java}}
+	A \texttt{ServerWorker} is instantiated for each \texttt{HTTP} request. When a worker is instantiated, he is responsible for a game (but only the time to treat the \texttt{HTTP} request).\par
+	A \texttt{ServerWorker}, thanks to all other classes, will send the web pages to the client, create / delete a new game (if the game is over), interpret the user's requests and update the game status and ranking.\par
+	A \texttt{ServerWorker} is a thread, so all of its actions are in the \texttt{run} method. In order to facilitate its readability, some repetitive actions have been created in the form of methods.
+	\subsection{\texttt{WebServer.java}}
+	This is the main class of the project. It maintains the list of all games on the server. It is responsible for creating a new \texttt{ServerWorker} for each request. It also takes care, thanks to the methods \texttt{addFame} and \texttt{getFame}, to maintain a ranking of the best scores and to allow the display.\par
+	It also has a mechanism to remove expired games from the server. Indeed, if a player leaves his game without finishing it, the cookie will disappear and the socket will close thanks to the timeout. However, the game will still be saved on the server. A game whose cookie has expired on the client's browser is considered as \og expired game\fg{}.
+	\section{Multi-thread coordination}
+	\subsection{The workers}
+	In this project, a new thread (\texttt{ServerWorker}) is created for each new \texttt{HTTP} request (\texttt{GET} or \texttt{POST}). The request is executed and the thread dies.\par
+	A thread takes care of a single request concerning a single game. However, it is possible to create several threads acting on the same game at the same time (for example if the game is open in several tabs). Operations that change the state of a game (method to attack a position, \texttt{hitPos}) are not atomic, so they are all \texttt{synchronized} (methods in \texttt{GameManager} class).
+	\subsection{The game list}
+	All games running on the server are saved in an array. Each created thread can access this array to add or remove a game. As this array is shared for all threads, it is essential that the piece of code handling it is \texttt{synchronized} to ensure consistency (in \texttt{ServerWorker} class).
+	\subsection{Hall of fame}
+	In addition, the result of each winning game (the {\it hall of fame}) is also saved in an array on the server. The method to add a score (\texttt{addFame} in \texttt{WebServer} class) is also \texttt{synchronized} to prevent multiple threads adding scores at the same time (which could lead to inconsistency or loss of information).\par
+	Since games are independent and do not parish any data, no other method, variable or piece of code requires synchronization mechanisms.
+	\section{Limits}
+	\subsection{Robustness}
+	Methods for updating the game state based on user input (the function to attack a position for example) are robust. Indeed, we can't assume that the user will systematically enter a valid position. We must anticipate a potential bad input to protect the server against crash.\par
+	In general, the other methods are also robust, that is, they prevent bad input from crashing the server.\par
+	The way the \texttt{GET} and \texttt{POST} methods are parsed prevents the client from crashing the server via a custom method. Exceptions are triggered if the content or the header do not match what is expected.\par
+	Furthermore, using a thread pool prevents DoS attacks, which were not taken care of in the first part of the project.
+	\subsection{Data backup}
+	Regarding data backup, the program doesn't have the right to manipulate files. It is therefore impossible for it to permanently save the game data (if the server is shut down, all scores are lost, as well as the states of the games being currently played).
+	\subsection{Loading of web page}
+	Regarding the loading of the web page, we noticed that when we used images a bit too large (squares of 250 px for the game grid for example), the page took time to be displayed (the grid is displayed square by square). With this in mind, it seems unthinkable, with the techniques used, to display very high quality images (4K for example), sounds or animations on the web pages.
+	\section{Possible improvements}
+	In general, the game is quite user-friendly : it is easy to play (just click on a position, or choose from a drop-down list), the game information are displayed (the grid in real time, the number of trials and ships remaining) and the interface is rather pleasant (although not yet worthy of major American studios).\par
+	However, the user's pseudo is generated randomly. This is not very convenient for the user as he must remember his username if he wants to see his achievements in the hall of fame, and he has no idea who are the other players.\par
+	To improve this, we could ask the user to choose a custom pseudonym at the beginning of each game.\par
+	Still concerning the users, they are identified by a cookie which has a lifespan of 10 minutes. When this cookie dies, it is impossible for the user to recover his game session, and therefore to improve his score. In addition, the scores themselves are saved in a variable on the server. This means that if the server shuts down, all scores are lost.\par
+	To overcome this, we could imagine working with a database (or at least files on the server) : all users and scores would be recorded. Thus, a user would only have to log in with his pseudonym (and a password) in order to retrieve all his game data, and the scores would never be lost.\par
+	In this perspective of a database, we could display more advanced statistics for each player: its number of games played, wins, losses, hours of play, ...
+\end{document}
